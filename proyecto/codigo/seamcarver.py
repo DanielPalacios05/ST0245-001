@@ -75,7 +75,6 @@ class SeamCarver:
 
         for i in range(1, r):
             for j in range(0, c):
-                # Handle the left edge of the image, to ensure we don't index -1
                 if j == 0:
                     idx = np.argmin(M[i - 1, j:j + 2])
                     backtrack[i, j] = idx + j
