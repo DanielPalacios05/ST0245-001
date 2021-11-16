@@ -1,25 +1,28 @@
+import numpy as np
+from matplotlib.pyplot import imsave, imshow
+from numpy.lib.npyio import genfromtxt
 class Node:
     def __init__(self, prob, symbol, left=None, right=None):
-        
+        # probability of symbol
         self.prob = prob
 
-        
+        # symbol 
         self.symbol = symbol
 
-        
+        # left node
         self.left = left
 
-        
+        # right node
         self.right = right
 
-        
+        # tree direction (0/1)
         self.code = ''
 
 """ A helper function to print the codes of symbols by traveling Huffman Tree"""
 codes = dict()
 
 def Calculate_Codes(node, val=''):
-    
+    # huffman code for current node
     newVal = val + str(node.code)
 
     if(node.left):
@@ -29,7 +32,7 @@ def Calculate_Codes(node, val=''):
 
     if(not node.left and not node.right):
         codes[node.symbol] = newVal
-    
+         
     return codes        
 
 """ A helper function to calculate the probabilities of symbols in given data"""
@@ -46,7 +49,7 @@ def Calculate_Probability(data):
 def Output_Encoded(data, coding):
     encoding_output = []
     for c in data:
-    
+      #  print(coding[c], end = '')
         encoding_output.append(coding[c])
         
     string = ''.join([str(item) for item in encoding_output])    
@@ -54,12 +57,12 @@ def Output_Encoded(data, coding):
         
 """ A helper function to calculate the space difference between compressed and non compressed data"""    
 def Total_Gain(data, coding):
-    before_compression = len(data) * 8 
+    before_compression = len(data) * 8 # total bit space to stor the data before compression
     after_compression = 0
     symbols = coding.keys()
     for symbol in symbols:
         count = data.count(symbol)
-        after_compression += count * len(coding[symbol]) 
+        after_compression += count * len(coding[symbol]) #calculate how many bit is required for that symbol in total
     print("Space usage before compression (in bits):", before_compression)    
     print("Space usage after compression (in bits):",  after_compression)           
 
@@ -72,23 +75,24 @@ def Huffman_Encoding(data):
     
     nodes = []
     
-    
+    # converting symbols and probabilities into huffman tree nodes
     for symbol in symbols:
         nodes.append(Node(symbol_with_probs.get(symbol), symbol))
     
     while len(nodes) > 1:
-        
+        # sort all the nodes in ascending order based on their probability
         nodes = sorted(nodes, key=lambda x: x.prob)
-        
+        # for node in nodes:  
+        #      print(node.symbol, node.prob)
     
-        
+        # pick 2 smallest nodes
         right = nodes[0]
         left = nodes[1]
     
         left.code = 0
         right.code = 1
     
-        
+        # combine the 2 smallest nodes to create new node
         newNode = Node(left.prob+right.prob, left.symbol+right.symbol, left, right)
     
         nodes.remove(left)
@@ -101,7 +105,7 @@ def Huffman_Encoding(data):
     encoded_output = Output_Encoded(data,huffman_encoding)
     return encoded_output, nodes[0]  
     
-
+ 
 def Huffman_Decoding(encoded_data, huffman_tree):
     tree_head = huffman_tree
     decoded_output = []
@@ -118,6 +122,5 @@ def Huffman_Decoding(encoded_data, huffman_tree):
             huffman_tree = tree_head
         
     string = ''.join([str(item) for item in decoded_output])
-    return string        
-
+    return string      
 
